@@ -31,7 +31,7 @@ card_fan:
           - background-color: >
               [[[
                   if (variables.ulm_card_fan_color) {
-                    if (variables.ulm_card_fan_force_background_color || hass.themes.darkMode) {
+                    if (variables.ulm_card_fan_force_background_color) {
                       var color = variables.ulm_card_fan_color;
                       return 'rgba(var(--color-' + color + '),var(--opacity-bg))';
                     }
@@ -250,11 +250,11 @@ card_fan:
               thumbVerticalPadding: "0px"
               thumbWidth: "0px"
               card_mod:
-              style: |
-                ha-card {
-                  border-radius: 14px;
-                  box-shadow: none;
-                }
+                style: |
+                  ha-card {
+                    border-radius: 14px;
+                    box-shadow: none;
+                  }
           button:
             card:
               type: "custom:button-card"
@@ -263,10 +263,11 @@ card_fan:
               icon: "[[[ return variables.ulm_card_fan_button_icon ]]]"
               entity: "[[[ return entity.entity_id ]]]"
               tap_action:
-                action: "call-service"
-                service: "[[[ return variables.ulm_card_fan_button_service ]]]"
-                service_data:
+                action: "perform-action"
+                perform_action: "[[[ return variables.ulm_card_fan_button_service ]]]"
+                target:
                   entity_id: "[[[ return entity.entity_id ]]]"
+                data:
                   oscillating: "[[[ return !entity.attributes[variables.ulm_card_fan_oscillate_attribute] ]]]"
               state:
                 - operator: "template"

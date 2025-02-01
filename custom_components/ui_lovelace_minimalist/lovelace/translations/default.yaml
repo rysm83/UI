@@ -14,83 +14,56 @@ ulm_translation_engine:
     ulm_translation_more_options: "[[[ return hass.resources[hass['language']]['ui.panel.lovelace.editor.edit_card.options']; ]]]"
     ulm_active_state: >
       [[[
-        let not_active = ['disarmed','off','closed','not_home','standby','idle','docked','unknown','unavailable','paused']
-        return !not_active.includes(entity.state)
-      ]]]
-    ulm_translation_hour: >
-      [[[
-        var number = hass.resources[hass['language']]["ui.duration.hour"];
-        var matches = number.match(/[^{\}]+(?=})/g);
-        var hour = "Hour";
-        if (matches) {
-          var hour = matches[1];
-        }
-        return(hour);
-      ]]]
-    ulm_translation_hours: >
-      [[[
-        var number = hass.resources[hass['language']]["ui.duration.hour"];
-        var matches = number.match(/[^{\}]+(?=})/g);
-        var hour = "Hours";
-        if (matches) {
-          var hour = matches[2];
-        }
-        return(hour);
-      ]]]
-    ulm_translation_hvac: >
-      [[[
         if (typeof(entity) !== 'undefined' && entity !== undefined){
-          let state = entity.state;
-          let d_class = entity.attributes.device_class;
-          let def = ["unknown", "unavailable"];
-          let lang = hass["language"];
-          let action = entity.attributes.hvac_action;
-          let domain = entity.entity_id.substr(0, entity.entity_id.indexOf("."));
-          var mode = hass.resources[lang]["state_attributes." + domain + ".hvac_action." + action];
-          if (def.includes(state)) {
-            var mode = hass.resources[lang]["state.default." + state ];
+          let not_active = ['disarmed','off','closed','not_home','standby','idle','docked','unknown','unavailable','paused']
+          function containsNumbers(str) {
+            return /\d/.test(str);
           }
-          var label = hass.resources[lang]["component." + domain + ".state._." + state];
-          var translation = label ? label : state;
-          return (entity.attributes.current_temperature ) + '°' + ' • ' + translation + ((entity.state !='off' && mode !== undefined) ? ' (' + mode + ')' : '');
-          }
+          return (!not_active.includes(entity.state) && !containsNumbers(entity.state))
+        }
       ]]]
     ulm_translation_off: "[[[ return hass.resources[hass['language']]['state.default.off']; ]]]"
     ulm_translation_on: "[[[ return hass.resources[hass['language']]['state.default.on']; ]]]"
     ulm_translation_state: >
       [[[
         if (typeof(entity) !== 'undefined' && entity !== undefined){
-          let state = entity.state;
-          let d_class = entity.attributes.device_class;
-          let def = ["unknown", "unavailable"];
+          let device_class = entity.attributes.device_class;
           let lang = hass["language"];
+          let action = entity.attributes.hvac_action;
           let domain = entity.entity_id.substr(0, entity.entity_id.indexOf("."));
-          var translation = hass.resources[lang]["component." + domain + ".state._." + state]
-          const now = new Date();
-          const timestamp = (new Date(state)).getTime();
-          const nowTimeStamp = now.getTime();
-          const microSecondsDiff = Math.round(timestamp - nowTimeStamp);
-          const daysDiff = Math.round(microSecondsDiff / (1000 * 60 * 60  * 24));
-          const hoursDiff = Math.round(microSecondsDiff / (1000 * 60 * 60));
-          const minutesDiff = Math.round(microSecondsDiff / (1000 * 60));
-          const secondsDiff = Math.round(microSecondsDiff / (1000));
-          const formatter = new Intl.RelativeTimeFormat(lang, { numeric: 'auto' });
-          var scale = 'day'
-          var diff = 'daysDiff'
-          if (Math.abs(secondsDiff) < 60){ scale = 'second'; diff = secondsDiff }
-          else if (Math.abs(minutesDiff) < 60){ scale = 'minute'; diff = minutesDiff }
-          else if (Math.abs(hoursDiff) < 24){ scale = 'hour'; diff = hoursDiff }
-
-          if (def.includes(state)) {
-            var translation = hass.resources[lang]["state.default." + state ];
+          let mode =  hass.resources[lang]["state_attributes." + domain + ".hvac_action." + action];
+          if(variables.ulm_show_last_changed){
+            let dt = new Intl.RelativeTimeFormat(lang, { style: "long" });
+            let delta = (Date.parse(entity.last_changed) - Date.now()) / 1000
+            let days = 0
+            if (delta > 1000)
+              days = parseInt(delta / (60 * 60 * 24));
+            let hours = parseInt(Math.round(delta / (60 * 60)) % 24);
+            let hours_unrounded = parseInt((delta / (60 * 60)) % 24);
+            let minutes = parseInt(Math.round(delta / 60) % 60);
+            let minutes_unrounded = parseInt((delta / 60) % 60);
+            let seconds = parseInt(Math.round(delta) % 60);
+            if (days != 0)
+              return dt.format(days,"days");
+            else if (hours_unrounded != 0)
+              return dt.format(hours,"hours");
+            else if (minutes_unrounded != 0)
+              return dt.format(minutes,"minutes");
+            return dt.format(seconds,"seconds");
           }
-          else if (domain == "binary_sensor" && d_class != ''){
-            var translation = hass.resources[lang]["component." + domain + ".state." + d_class + "." + state]
+          if(device_class == ('timestamp' || 'date')){
+            let dt = new Intl.DateTimeFormat(lang, {
+              dateStyle: "long",
+              timeStyle: "short"
+            });
+            let formatted_date = dt.format(Date.parse(entity.state))
+            return formatted_date;
           }
-          else if (d_class == 'timestamp'){
-            var translation = formatter.format(diff, scale)
+          if(entity.entity_id.startsWith("climate.")){
+            return helpers.localize(entity, entity.attributes.current_temperature) + ' • ' +
+            helpers.localize(entity) + ((entity.state !='off' && mode !== undefined) ? ' (' + mode + ')' : '');
           }
-          return translation ? translation.charAt(0).toUpperCase() + translation.slice(1) : state;
+          return helpers.localize(entity)
         }
       ]]]
     ulm_translation_state_reverse: >
@@ -108,55 +81,6 @@ ulm_translation_engine:
             var translation = hass.resources[lang]["state.default." + state ];
           }
           return translation ? translation : state;
-        }
-      ]]]
-    ulm_translation_state_unit: >
-      [[[
-        if (typeof(entity) !== 'undefined' && entity !== undefined){
-          let state = entity.state;
-          let d_class = entity.attributes.device_class;
-          let def = ["unknown", "unavailable"];
-          let lang = hass["language"];
-          let domain = entity.entity_id.substr(0, entity.entity_id.indexOf("."));
-          let unit = entity.attributes.unit_of_measurement != null ? " " + entity.attributes.unit_of_measurement : "";
-          const now = new Date();
-          const timestamp = (new Date(state)).getTime();
-          const nowTimeStamp = now.getTime();
-          const microSecondsDiff = Math.round(timestamp - nowTimeStamp);
-          const daysDiff = Math.round(microSecondsDiff / (1000 * 60 * 60  * 24));
-          const hoursDiff = Math.round(microSecondsDiff / (1000 * 60 * 60));
-          const minutesDiff = Math.round(microSecondsDiff / (1000 * 60));
-          const secondsDiff = Math.round(microSecondsDiff / (1000));
-          const formatter = new Intl.RelativeTimeFormat(lang, { numeric: 'auto' });
-
-          var scale = 'day'
-          var diff = 'daysDiff'
-          if (Math.abs(secondsDiff) < 60){ scale = 'second'; diff = secondsDiff }
-          else if (Math.abs(minutesDiff) < 60){ scale = 'minute'; diff = minutesDiff }
-          else if (Math.abs(hoursDiff) < 24){ scale = 'hour'; diff = hoursDiff }
-
-          if(hass.resources[lang]["component." + domain + ".state._." + state]){
-          var translation = hass.resources[lang]["component." + domain + ".state._." + state] + unit
-          } else {
-          var translation =  state + unit;
-          }
-          if (def.includes(state)) {
-            var translation = hass.resources[lang]["state.default." + state ];
-          }
-          else if (domain == "binary_sensor" && d_class != ''){
-            var translation = hass.resources[lang]["component." + domain + ".state." + d_class + "." + state]
-          }
-          else if (domain == "media_player" && d_class != ''){
-            if (state == 'idle' || state == 'paused')
-              var translation = hass.resources[lang]["component." + domain + ".state." + state];
-            else {
-              var translation = (entity.attributes.source) + ' • ' +  ( Math.round(entity.attributes.volume_level / 0.01)) + '%' ;
-            }
-          }
-          else if (d_class == 'timestamp'){
-            var translation = formatter.format(diff, scale);
-          }
-          return translation ? translation.charAt(0).toUpperCase() + translation.slice(1) : state;
         }
       ]]]
     ulm_translation_statistics: "[[[ return hass.resources[hass['language']]['ui.components.statistic-picker.statistic']; ]]]"

@@ -3,11 +3,10 @@
 card_binary_sensor:
   template:
     - "icon_more_info_new"
-    - "blue"
     - "ulm_translation_engine"
   show_last_changed: false
   variables:
-    ulm_show_last_changed: false
+    ulm_card_binary_sensor_show_last_changed: false
     ulm_card_binary_sensor_icon: "[[[ return entity.attributes.icon ]]]"
     ulm_card_binary_sensor_name: "[[[ return entity.attributes.friendly_name ]]]"
     ulm_outlet_power_enable_popup: false
@@ -20,7 +19,7 @@ card_binary_sensor:
         card:
           - background-color: >
               [[[
-                if (variables.ulm_card_binary_sensor_force_background_color || hass.themes.darkMode) {
+                if (variables.ulm_card_binary_sensor_force_background_color) {
                   var color = variables.ulm_card_binary_sensor_color;
                   return 'rgba(var(--color-' + color + '),var(--opacity-bg))';
                 }
@@ -76,7 +75,7 @@ card_binary_sensor:
               entity: "[[[ return entity.entity_id ]]]"
               name: "[[[ return variables.ulm_card_binary_sensor_name; ]]]"
               label: "[[[ return variables.ulm_translation_state;]]]"
-              show_last_changed: "[[[ return variables.ulm_show_last_changed; ]]]"
+              show_last_changed: "[[[ return variables.ulm_card_binary_sensor_show_last_changed; ]]]"
               variables: >
                 [[[
                   let vars = variables;

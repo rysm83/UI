@@ -33,12 +33,12 @@ card_light:
         card:
           - background-color: >
               [[[
-                var color_set = variables.ulm_card_light_enable_color ? entity.attributes.rgb_color : variables.ulm_card_light_color;
+                var color_set = (variables.ulm_card_light_enable_color && entity.attributes.rgb_color) ? entity.attributes.rgb_color : variables.ulm_card_light_color;
                 var color = 'rgba(var(--color-' + color_set + '),var(--opacity-bg))'
-                if(variables.ulm_card_light_enable_color){
+                if(variables.ulm_card_light_enable_color && entity.attributes.rgb_color){
                   color = 'rgba(' + color_set + ',var(--opacity-bg))'
                 }
-                if (variables.ulm_card_light_force_background_color || hass.themes.darkMode) {
+                if (variables.ulm_card_light_force_background_color) {
                   return color
                 }
               ]]]
@@ -150,9 +150,9 @@ card_light:
                 icon:
                   - color: >
                       [[[
-                        var color_set = variables.ulm_card_light_enable_color ? entity.attributes.rgb_color : variables.ulm_card_light_color;
+                        var color_set = variables.ulm_card_light_enable_color && entity.attributes.rgb_color ? entity.attributes.rgb_color : variables.ulm_card_light_color;
                         var color = 'rgba(var(--color-' + color_set + '),1)'
-                        if(variables.ulm_card_light_enable_color){
+                        if(variables.ulm_card_light_enable_color && entity.attributes.rgb_color){
                           color = 'rgba(' + color_set + ',1)'
                         }
                         if (entity.state != "on") {
@@ -163,9 +163,9 @@ card_light:
                 img_cell:
                   - background-color: >
                       [[[
-                        var color_set = variables.ulm_card_light_enable_color ? entity.attributes.rgb_color : variables.ulm_card_light_color;
+                        var color_set = variables.ulm_card_light_enable_color && entity.attributes.rgb_color ? entity.attributes.rgb_color : variables.ulm_card_light_color;
                         var color = 'rgba(var(--color-' + color_set + '),0.2)'
-                        if(variables.ulm_card_light_enable_color){
+                        if(variables.ulm_card_light_enable_color && entity.attributes.rgb_color){
                           color = 'rgba(' + color_set + ',0.2)'
                         }
                         if (entity.state != "on") {
@@ -226,9 +226,9 @@ card_light:
         maxSet: "[[[ return variables.ulm_card_light_enable_slider_maxSet ]]]"
         mainSliderColor: >
           [[[
-            var color_set = variables.ulm_card_light_enable_color ? entity.attributes.rgb_color : variables.ulm_card_light_color;
+            var color_set = variables.ulm_card_light_enable_color && entity.attributes.rgb_color ? entity.attributes.rgb_color : variables.ulm_card_light_color;
             var color = 'rgba(var(--color-' + color_set + '),1)'
-            if(variables.ulm_card_light_enable_color){
+            if(variables.ulm_card_light_enable_color && entity.attributes.rgb_color){
               color = 'rgba(' + color_set + ',1)'
             }
             if (entity.state == "unavailable") {
@@ -241,9 +241,9 @@ card_light:
           ]]]
         secondarySliderColor: >
           [[[
-            var color_set = variables.ulm_card_light_enable_color ? entity.attributes.rgb_color : variables.ulm_card_light_color;
+            var color_set = variables.ulm_card_light_enable_color && entity.attributes.rgb_color ? entity.attributes.rgb_color : variables.ulm_card_light_color;
             var color = 'rgba(var(--color-' + color_set + '),0.2)'
-            if(variables.ulm_card_light_enable_color){
+            if(variables.ulm_card_light_enable_color && entity.attributes.rgb_color){
               color = 'rgba(' + color_set + ',0.2)'
             }
             if (entity.state == "unavailable") {
@@ -253,9 +253,9 @@ card_light:
           ]]]
         thumbColor: >
           [[[
-            var color_set = variables.ulm_card_light_enable_color ? entity.attributes.rgb_color : variables.ulm_card_light_color;
+            var color_set = variables.ulm_card_light_enable_color && entity.attributes.rgb_color ? entity.attributes.rgb_color : variables.ulm_card_light_color;
             var color = 'rgba(var(--color-' + color_set + '),1)'
-            if(variables.ulm_card_light_enable_color){
+            if(variables.ulm_card_light_enable_color && entity.attributes.rgb_color){
               color = 'rgba(' + color_set + ',1)'
             }
             if (entity.state == "unavailable") {
@@ -272,11 +272,11 @@ card_light:
         thumbVerticalPadding: "0px"
         thumbWidth: "12px"
         card_mod:
-        style: |
-          ha-card {
-            border-radius: 14px;
-            box-shadow: none;
-          }
+          style: |
+            ha-card {
+              border-radius: 14px;
+              box-shadow: none;
+            }
     item3:
       card:
         type: "custom:button-card"
@@ -306,9 +306,9 @@ card_light:
                       [[[
                         if (variables.ulm_card_light_force_background_color) {
                           if (entity.state != "off") {
-                            var color_set = variables.ulm_card_light_enable_color ? entity.attributes.rgb_color : variables.ulm_card_light_color;
+                            var color_set = variables.ulm_card_light_enable_color && entity.attributes.rgb_color ? entity.attributes.rgb_color : variables.ulm_card_light_color;
                             var color = 'rgba(var(--color-' + color_set + '),0.2)'
-                            if (variables.ulm_card_light_enable_color) {
+                            if (variables.ulm_card_light_enable_color && entity.attributes.rgb_color) {
                               color = 'rgba(' + color_set + ',0.2)';
                             }
                             return color;
@@ -320,9 +320,9 @@ card_light:
                       [[[
                         if (variables.ulm_card_light_force_background_color) {
                           if (entity.state != "off") {
-                            var color_set = variables.ulm_card_light_enable_color ? entity.attributes.rgb_color : variables.ulm_card_light_color;
+                            var color_set = variables.ulm_card_light_enable_color && entity.attributes.rgb_color ? entity.attributes.rgb_color : variables.ulm_card_light_color;
                             var color = 'rgba(var(--color-' + color_set + '),1)';
-                            if (variables.ulm_card_light_enable_color) {
+                            if (variables.ulm_card_light_enable_color && entity.attributes.rgb_color) {
                               color = 'rgba(' + color_set + ',1)';
                             }
                             return color;
@@ -331,10 +331,11 @@ card_light:
                         return 'rgba(var(--color-theme),0.9)';
                       ]]]
               tap_action:
-                action: "call-service"
-                service: "light.turn_on"
-                service_data:
+                action: "perform-action"
+                perform_action: "light.turn_on"
+                target:
                   entity_id: "[[[ return entity.entity_id ]]]"
+                data:
                   brightness_pct: "[[[ return variables.ulm_card_light_brightness_low ]]]"
               icon: "mdi:lightbulb-on-10"
           item2:
@@ -358,9 +359,9 @@ card_light:
                       [[[
                         if (variables.ulm_card_light_force_background_color) {
                           if (entity.state != "off") {
-                            var color_set = variables.ulm_card_light_enable_color ? entity.attributes.rgb_color : variables.ulm_card_light_color;
+                            var color_set = variables.ulm_card_light_enable_color && entity.attributes.rgb_color ? entity.attributes.rgb_color : variables.ulm_card_light_color;
                             var color = 'rgba(var(--color-' + color_set + '),0.2)'
-                            if (variables.ulm_card_light_enable_color) {
+                            if (variables.ulm_card_light_enable_color && entity.attributes.rgb_color) {
                               color = 'rgba(' + color_set + ',0.2)';
                             }
                             return color;
@@ -372,9 +373,9 @@ card_light:
                       [[[
                         if (variables.ulm_card_light_force_background_color) {
                           if (entity.state != "off") {
-                            var color_set = variables.ulm_card_light_enable_color ? entity.attributes.rgb_color : variables.ulm_card_light_color;
+                            var color_set = variables.ulm_card_light_enable_color && entity.attributes.rgb_color ? entity.attributes.rgb_color : variables.ulm_card_light_color;
                             var color = 'rgba(var(--color-' + color_set + '),1)';
-                            if (variables.ulm_card_light_enable_color) {
+                            if (variables.ulm_card_light_enable_color && entity.attributes.rgb_color) {
                               color = 'rgba(' + color_set + ',1)';
                             }
                             return color;
@@ -383,10 +384,11 @@ card_light:
                         return 'rgba(var(--color-theme),0.9)';
                       ]]]
               tap_action:
-                action: "call-service"
-                service: "light.turn_on"
-                service_data:
+                action: "perform-action"
+                perform_action: "light.turn_on"
+                target:
                   entity_id: "[[[ return entity.entity_id ]]]"
+                data:
                   brightness_pct: "[[[ return variables.ulm_card_light_brightness_medium ]]]"
               icon: "mdi:lightbulb-on-50"
           item3:
@@ -410,9 +412,9 @@ card_light:
                       [[[
                         if (variables.ulm_card_light_force_background_color) {
                           if (entity.state != "off") {
-                            var color_set = variables.ulm_card_light_enable_color ? entity.attributes.rgb_color : variables.ulm_card_light_color;
+                            var color_set = variables.ulm_card_light_enable_color && entity.attributes.rgb_color ? entity.attributes.rgb_color : variables.ulm_card_light_color;
                             var color = 'rgba(var(--color-' + color_set + '),0.2)'
-                            if (variables.ulm_card_light_enable_color) {
+                            if (variables.ulm_card_light_enable_color && entity.attributes.rgb_color) {
                               color = 'rgba(' + color_set + ',0.2)';
                             }
                             return color;
@@ -424,9 +426,9 @@ card_light:
                       [[[
                         if (variables.ulm_card_light_force_background_color) {
                           if (entity.state != "off") {
-                            var color_set = variables.ulm_card_light_enable_color ? entity.attributes.rgb_color : variables.ulm_card_light_color;
+                            var color_set = variables.ulm_card_light_enable_color && entity.attributes.rgb_color ? entity.attributes.rgb_color : variables.ulm_card_light_color;
                             var color = 'rgba(var(--color-' + color_set + '),1)';
-                            if (variables.ulm_card_light_enable_color) {
+                            if (variables.ulm_card_light_enable_color && entity.attributes.rgb_color) {
                               color = 'rgba(' + color_set + ',1)';
                             }
                             return color;
@@ -435,9 +437,10 @@ card_light:
                         return 'rgba(var(--color-theme),0.9)';
                       ]]]
               tap_action:
-                action: "call-service"
-                service: "light.turn_on"
-                service_data:
+                action: "perform-action"
+                perform_action: "light.turn_on"
+                target:
                   entity_id: "[[[ return entity.entity_id ]]]"
+                data:
                   brightness_pct: "[[[ return variables.ulm_card_light_brightness_high ]]]"
               icon: "mdi:lightbulb-on"
